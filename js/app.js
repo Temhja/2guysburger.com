@@ -55,7 +55,7 @@
     "@context": "https://schema.org", "@type": "Menu", "@id": S.url + "/#menu", "name": "منيو " + S.name, "inLanguage": "ar",
     "hasMenuSection": MENU.map(function (c) {
       return { "@type": "MenuSection", "name": c.ar, "hasMenuItem": c.items.map(function (i) {
-        return { "@type": "MenuItem", "name": i.ar, "alternateName": i.en, "description": i.d, "image": S.url + "/" + img(i.id),
+        return { "@type": "MenuItem", "name": i.ar, "alternateName": i.en, "description": i.d || undefined, "image": S.url + "/" + img(i.id),
           "offers": { "@type": "Offer", "price": i.p, "priceCurrency": S.currency } };
       }) };
     })
@@ -68,14 +68,14 @@
   $("menu").innerHTML = MENU.map(function (c) {
     var pair = c.items.length === 2;
     return '<section class="cat" id="cat-' + c.id + '" aria-labelledby="h-' + c.id + '">' +
-      '<div class="cat-h"><h2 id="h-' + c.id + '">' + c.ar + '</h2><span class="vs">' + (pair ? "<b>01</b> لو <b>02</b>" : c.en) + "</span></div>" +
-      '<div class="grid' + (c.items.length === 3 ? " three" : "") + '">' +
+      '<div class="cat-h"><h2 id="h-' + c.id + '">' + c.ar + '</h2><span class="vs">' + (pair ? "<b>01</b> لو <b>02</b>" : c.en.toUpperCase()) + "</span></div>" +
+      '<div class="grid' + (c.items.length === 3 ? " three" : c.items.length === 1 ? " one" : "") + '">' +
       c.items.map(function (i) {
         return '<div class="card">' +
           '<span class="ph"><img src="' + img(i.id, 1) + '" alt="' + esc(i.ar + " – " + i.en) + '" loading="lazy" decoding="async" width="360" height="360"></span>' +
           (pair ? '<span class="no">' + i.no + "</span>" : "") +
-          '<h3><a class="lk" href="#' + i.id + '">' + i.ar + '</a></h3><p class="en">' + i.en + "</p>" +
-          '<div class="ft"><span class="num">' + money(i.p) + '</span><button type="button" class="plus" data-quick="' + i.id + '" aria-label="ضيف ' + esc(i.ar) + '">' + plusIcon + "</button></div>" +
+          '<div class="body"><h3><a class="lk" href="#' + i.id + '">' + i.ar + '</a></h3><p class="en">' + i.en + "</p>" +
+          '<div class="ft"><span class="num">' + money(i.p) + '</span><button type="button" class="plus" data-quick="' + i.id + '" aria-label="ضيف ' + esc(i.ar) + '">' + plusIcon + "</button></div></div>" +
           "</div>";
       }).join("") + "</div></section>";
   }).join("");
@@ -98,7 +98,8 @@
     $("crumb").textContent = c.en.toUpperCase() + " · " + it.no + " / " + String(c.items.length).padStart(2, "0");
     $("stage").innerHTML = '<div class="enter"><img class="spin" src="' + img(id) + '" alt="' + esc(it.ar + " – " + it.en) + '" width="900" height="900"></div>';
     $("sw").innerHTML = c.items.map(function (x, k) { return (k ? "<i>لو</i>" : "") + '<button type="button" data-go="' + x.id + '" aria-current="' + (x.id === id) + '" aria-label="' + esc(x.ar) + '">' + x.no + "</button>"; }).join("");
-    $("iName").textContent = it.ar; $("iEn").textContent = it.en; $("iDesc").textContent = it.d;
+    $("iName").textContent = it.ar; $("iEn").textContent = it.en; $("iDesc").textContent = it.d || ""; $("iDesc").hidden = !it.d;
+    $("sw").hidden = c.items.length < 2;
     $("bothBtn").hidden = c.items.length !== 2; qtyUI();
     document.title = it.ar + " · " + S.name;
     T("ViewContent", { content_ids: [id], content_name: it.en, content_category: c.en, content_type: "product", value: it.p, currency: S.currency });

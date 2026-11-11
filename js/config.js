@@ -23,35 +23,27 @@ window.SITE = {
 };
 
 /* Images live in assets/img/menu/<id>.webp (large, spins on item page)
-   and <id>-t.webp (360px thumbnail). Keep the id when replacing a photo. */
+   and <id>-t.webp (360px thumbnail). Keep the id when replacing a photo.
+   d: short description (optional — leave "" to hide it). */
 window.MENU = [
   { id: "burger", ar: "برگر", en: "Burgers", items: [
-    { id: "b1", ar: "الكلاسيك", en: "Double smash beef", p: 9000,
-      d: "قطعتين لحم سماش بحواف مقرمشة، جبن شيدر ذايب، صوص البيت، مخلل." },
-    { id: "b2", ar: "الكرسبي", en: "Crispy chicken", p: 8000,
-      d: "صدر دجاج مقرمش، مايونيز حار، خس، مخلل، بريوش طري." }
+    { id: "b1", ar: "ترفل برگر", en: "Truffle burger", p: 10000, d: "" },
+    { id: "b2", ar: "كلاسيك برگر", en: "Classic burger", p: 8000, d: "" }
   ]},
-  { id: "wings", ar: "وينگز", en: "Wings", items: [
-    { id: "w1", ar: "بفلو حار", en: "Buffalo · 6 pcs", p: 7000,
-      d: "٦ قطع مغطّسة بصوص بفلو، وياها رانش وكرفس." },
-    { id: "w2", ar: "عسل وثوم", en: "Honey garlic · 6 pcs", p: 7000,
-      d: "٦ قطع بصوص عسل وثوم، سمسم وبصل أخضر، وياها صوص ثوم." }
+  { id: "wings", ar: "أجنحة", en: "Wings", items: [
+    { id: "w1", ar: "أجنحة بافلو", en: "Buffalo wings", p: 6000, d: "" },
+    { id: "w2", ar: "أجنحة هني ماسترد", en: "Honey mustard wings", p: 6000, d: "" }
   ]},
   { id: "fries", ar: "بطاطا", en: "Fries", items: [
-    { id: "f1", ar: "كلاسيك", en: "House salt", p: 3000,
-      d: "بطاطا بقشرها مقرمشة بملح البحر." },
-    { id: "f2", ar: "لودد", en: "Loaded", p: 5000,
-      d: "جبن شيدر ذايب، صوص البيت، هالابينو." }
+    { id: "f1", ar: "كيرلي فرايز", en: "Curly fries", p: 4000, d: "" }
   ]},
   { id: "sweets", ar: "حلويات", en: "Sweets", items: [
-    { id: "s1", ar: "كوكي حار", en: "Warm cookie", p: 4000,
-      d: "كوكي طالع من الفرن، قطع شوكليت داكن وملح بحري." },
-    { id: "s2", ar: "تشيز كيك لوتس", en: "Lotus cheesecake", p: 5000,
-      d: "قطعة تشيز كيك، كريمة لوتس وفتات بسكويت." }
+    { id: "s1", ar: "ابل پاي", en: "Apple pie", p: 3000, d: "" },
+    { id: "s2", ar: "كريم پف", en: "Cream puff", p: 3000, d: "" }
   ]},
   { id: "drinks", ar: "مشروبات", en: "Drinks", items: [
-    { id: "d1", ar: "بيبسي", en: "Pepsi · can", p: 1000, d: "قوطية باردة." },
-    { id: "d2", ar: "سفن أب", en: "7UP · can", p: 1000, d: "قوطية باردة." },
-    { id: "d3", ar: "ماي", en: "Water", p: 500, d: "بطل ماي بارد." }
+    { id: "d1", ar: "فلوت", en: "Float", p: 5000, d: "" }
+    // Pepsi: add when the price is confirmed, e.g.
+    // ,{ id: "d2", ar: "ببسي", en: "Pepsi", p: 1000, d: "" }   (needs assets/img/menu/d2.webp + d2-t.webp)
   ]}
 ];

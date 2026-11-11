@@ -26,7 +26,8 @@ robots.txt, sitemap.xml, site.webmanifest
 
 | Task | What to change |
 |---|---|
-| Change a price or name | `MENU` → the item's `p` (price in IQD) / `ar` / `en` / `d` |
+| Change a price or name | `MENU` → the item's `p` (price in IQD) / `ar` / `en` / `d` (description, optional) |
+| Add Pepsi | uncomment the `d2` line in `MENU` and add `assets/img/menu/d2.webp` + `d2-t.webp` |
 | Change the WhatsApp that receives orders | `whatsapp` (format `9647XXXXXXXXX`, no +, no leading 0) |
 | Turn on Meta Pixel | `metaPixelId: "1234567890"` |
 | Remove the "SOFT OPENING" badge | `badge: ""` |
