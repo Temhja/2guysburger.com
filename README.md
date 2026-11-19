@@ -12,6 +12,7 @@ index.html            page markup + SEO, Open Graph, Restaurant schema
 css/style.css         all styles (brand: green #193F32, coral #E6624D)
 js/config.js          ← EDIT THIS: WhatsApp number, phones, Pixel ID, menu, prices
 js/pixel.js           Meta Pixel loader + event helper
+js/analytics.js       Google Analytics 4 (visitors, sources, item views, WhatsApp funnel)
 js/app.js             menu, item page, cart, WhatsApp message
 assets/img/hero.webp  home hero photo
 assets/img/menu/      one photo per item: <id>.webp (900px) + <id>-t.webp (360px thumb)
@@ -30,6 +31,7 @@ robots.txt, sitemap.xml, site.webmanifest
 | Add Pepsi | uncomment the `d2` line in `MENU` and add `assets/img/menu/d2.webp` + `d2-t.webp` |
 | Change the WhatsApp that receives orders | `whatsapp` (format `9647XXXXXXXXX`, no +, no leading 0) |
 | Turn on Meta Pixel | `metaPixelId: "1234567890"` |
+| Turn on Google Analytics (visitor count) | `ga4Id: "G-XXXXXXXXXX"` |
 | Remove the "SOFT OPENING" badge | `badge: ""` |
 | Replace a photo | overwrite `assets/img/menu/<id>.webp` and `<id>-t.webp`, same file names |
 

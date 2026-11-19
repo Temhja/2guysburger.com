@@ -18,6 +18,9 @@ window.SITE = {
   // Meta Pixel: paste the Pixel ID from Events Manager (numbers only). Empty = pixel off.
   metaPixelId: "",
 
+  // Google Analytics 4: Measurement ID from GA4 > Admin > Data streams (looks like "G-XXXXXXXXXX"). Empty = off.
+  ga4Id: "",
+
   // Small badge on the hero photo. Set to "" to hide it after launch.
   badge: "SOFT OPENING · 15.11"
 };

@@ -32,7 +32,7 @@
   }
 
   /* ---------- pixel helpers ---------- */
-  var T = function (ev, p, custom) { if (window.track) window.track(ev, p, custom); };
+  var T = function (ev, p, custom) { if (window.track) window.track(ev, p, custom); if (window.gaTrack) window.gaTrack(ev, p); };
   function cartPayload() {
     var t = totals();
     return {
