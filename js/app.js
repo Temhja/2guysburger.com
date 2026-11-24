@@ -228,6 +228,10 @@
     var ob = document.createElement("button"); ob.type = "button"; ob.className = "ofr-btn"; ob.innerHTML = "<span>العروض</span><b>" + OF.length + "</b>";
     ob.onclick = function () { openOffers(false); };
     document.querySelector(".hero .tx").insertBefore(ob, document.querySelector(".hero h1"));
+    var nb = document.createElement("button"); nb.type = "button"; nb.className = "o"; nb.id = "navOffers"; nb.setAttribute("aria-haspopup", "dialog");
+    nb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8S10.5 4 8.5 4 6 6.5 8 8M12 8s1.5-4 3.5-4S18 6.5 16 8"/></svg>عروض';
+    nb.onclick = function () { openOffers(false); };
+    $("navHome").insertAdjacentElement("afterend", nb);
     var seen = false; try { seen = sessionStorage.getItem("2g_ofr") === "1"; } catch (e) {}
     if (!seen) setTimeout(function () { if (!$("v-home").hidden && dlg.hidden) openOffers(true); }, 1400);
   }

@@ -166,6 +166,8 @@ form{display:flex;flex-direction:column;gap:12px;margin-top:16px}
 .nav .c{flex:1;justify-content:space-between;background:var(--coral);color:#fff;padding:0 18px;font-weight:600}
 .nav .c .l{display:flex;align-items:center;gap:8px}
 .nav .c svg{width:20px}
+.nav .o{flex:none;justify-content:center;gap:6px;padding:0 14px;background:var(--cream);color:var(--green);font-weight:700;font-size:15px}
+.nav .o svg{width:20px}
 .badge{min-width:22px;height:22px;border-radius:11px;background:#fff;color:var(--coral);font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
 .badge.pop{animation:pop .45s}
 @keyframes pop{40%{transform:scale(1.45)}}
