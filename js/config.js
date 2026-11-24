@@ -25,6 +25,17 @@ window.SITE = {
   badge: "SOFT OPENING · 15.11"
 };
 
+/* Offers popup. on:false hides the popup and the "العروض" button.
+   Burgers category; the customer picks the mix, price = the burgers' menu prices.
+   free: item ids that come free (wings: customer picks the flavour). */
+window.OFFERS = {
+  on: true,
+  list: [
+    { id: "o2", n: 2, title: "عرض ٢ برگر", head: "٢ برگر ← الأجنحة علينا", free: ["wings"] },
+    { id: "o3", n: 3, title: "عرض ٣ برگر", head: "٣ برگر ← الأجنحة والبطاطا علينا", free: ["wings", "f1"] }
+  ]
+};
+
 /* Images live in assets/img/menu/<id>.webp (large, spins on item page)
    and <id>-t.webp (360px thumbnail). Keep the id when replacing a photo.
    d: short description (optional — leave "" to hide it). */

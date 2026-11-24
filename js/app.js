@@ -10,10 +10,24 @@
   var ITEMS = {}, CAT = {};
   MENU.forEach(function (c) { c.items.forEach(function (it, k) { ITEMS[it.id] = it; CAT[it.id] = c; it.no = String(k + 1).padStart(2, "0"); }); });
 
+  /* ---------- offers: cart ids look like o2-<classic>-<truffle>-<wing id> ---------- */
+  var OF = (window.OFFERS && OFFERS.on) ? OFFERS.list : [];
+  var OFB = {}; OF.forEach(function (o) { OFB[o.id] = o; });
+  var BUR = (MENU.filter(function (c) { return c.id === "burger"; })[0] || { items: [] }).items;
+  function offerItem(id) {
+    if (ITEMS[id]) return ITEMS[id];
+    var m = /^(o\d)-(\d)-(\d)-(w\d)$/.exec(id), o = m && OFB[m[1]]; if (!o || !ITEMS[m[4]]) return null;
+    var cnt = [+m[2], +m[3]]; if (cnt[0] + cnt[1] !== o.n) return null;
+    var parts = [], p = 0;
+    BUR.slice().sort(function (x, y) { return x.p - y.p; }).forEach(function (b, k) { if (cnt[k]) { parts.push(cnt[k] + " " + b.ar); p += cnt[k] * b.p; } });
+    var free = o.free.map(function (f) { return f === "wings" ? ITEMS[m[4]].ar : ITEMS[f] ? ITEMS[f].ar : ""; }).filter(Boolean);
+    return (ITEMS[id] = { id: id, offer: true, ar: o.title + ": " + parts.join(" + ") + " + " + free.join(" + ") + " مجاناً", en: o.title, p: p, thumb: img(BUR[0] ? BUR[0].id : "b1", 1) });
+  }
+
   /* ---------- storage (cart survives a trip to WhatsApp) ---------- */
   var cart = new Map(), curId = null, qty = 1, code = "", checkoutTracked = false;
   function save() { try { localStorage.setItem("2g_cart", JSON.stringify([...cart])); } catch (e) {} }
-  try { JSON.parse(localStorage.getItem("2g_cart") || "[]").forEach(function (r) { if (ITEMS[r[0]] && r[1] > 0) cart.set(r[0], r[1]); }); } catch (e) {}
+  try { JSON.parse(localStorage.getItem("2g_cart") || "[]").forEach(function (r) { if ((ITEMS[r[0]] || offerItem(r[0])) && r[1] > 0) cart.set(r[0], r[1]); }); } catch (e) {}
 
   /* ---------- ad source (UTM / fbclid) → shown to the cashier in the order ---------- */
   var src = {};
@@ -125,7 +139,7 @@
     var t = totals(); $("cartFull").hidden = !t.c; $("cartEmpty").hidden = !!t.c; if (!t.c) return;
     if (!code) code = "2G-" + String(Math.floor(1000 + Math.random() * 9000));
     $("cl").innerHTML = [...cart].map(function (r) { var id = r[0], q = r[1], i = ITEMS[id];
-      return '<div class="ci"><img src="' + img(id, 1) + '" alt="" width="60" height="60"><div><h3>' + i.ar + '</h3><span class="num">' + money(i.p * q) + "</span></div>" +
+      return '<div class="ci"><img src="' + (i.thumb || img(id, 1)) + '" alt="" width="60" height="60"><div><h3>' + i.ar + '</h3><span class="num">' + money(i.p * q) + "</span></div>" +
         '<span class="step"><button type="button" data-dec="' + id + '" aria-label="نقّص ' + esc(i.ar) + '">−</button><span>' + q + '</span><button type="button" data-inc="' + id + '" aria-label="زيد ' + esc(i.ar) + '">+</button></span></div>'; }).join("");
     $("sCount").textContent = t.c + " قطعة"; $("sSub").innerHTML = money(t.t); $("sTot").innerHTML = money(t.t); $("oCode").textContent = "ORDER #" + code; link();
   }
@@ -168,6 +182,52 @@
     var b = $("copyBtn"), fail = function () { b.textContent = "ما انْسخ، صوّر الفاتورة"; };
     try { navigator.clipboard.writeText(message()).then(function () { b.textContent = "تم النسخ ✓"; }, fail); } catch (e) { fail(); }
   });
+
+  /* ---------- offers popup ---------- */
+  if (OF.length) {
+    var WINGS = (CAT.w1 || { items: [] }).items, cheap = BUR.slice().sort(function (x, y) { return x.p - y.p; });
+    var pick = {};
+    var freeTxt = function (o) { return o.free.map(function (f) { return f === "wings" ? "أجنحة" : ITEMS[f] ? ITEMS[f].ar : ""; }).join(" + "); };
+    var dlg = document.createElement("div"); dlg.className = "ofr"; dlg.hidden = true; dlg.setAttribute("role", "dialog"); dlg.setAttribute("aria-modal", "true"); dlg.setAttribute("aria-labelledby", "ofrH");
+    dlg.innerHTML = '<div class="ofr-bg" data-x></div><div class="ofr-box"><button type="button" class="ofr-x" data-x aria-label="سد">×</button>' +
+      '<p class="ofr-k">OFFERS</p><h2 id="ofrH">عروض <em><bdi dir="ltr">2 Guys</bdi></em></h2><p class="ofr-s">اختار البرگر من أي نوع، والباقي علينا.</p>' +
+      OF.map(function (o) {
+        pick[o.id] = { c: [o.n, 0], w: WINGS[0] ? WINGS[0].id : "w1" };
+        var thumbs = []; for (var k = 0; k < o.n; k++) thumbs.push('<img src="' + img(cheap[k % cheap.length].id, 1) + '" alt="" width="64" height="64">');
+        o.free.forEach(function (f) { thumbs.push('<span class="fr"><img src="' + img(f === "wings" ? (WINGS[0] || {}).id : f, 1) + '" alt="" width="64" height="64"><b>مجاناً</b></span>'); });
+        return '<div class="ofc" data-o="' + o.id + '"><div class="ofc-h"><span class="ofc-n">' + o.n + '</span><div><h3>' + (o.head || o.title) + '</h3><p>' + cheap.map(function (b) { return b.ar; }).join(" لو ") + '، لو تخلط بيناتهم</p></div></div>' +
+          '<div class="ofc-im">' + thumbs.join("") + '</div>' +
+          '<div class="ofc-pk">' + cheap.map(function (b, k) { return '<div class="rowx"><span>' + b.ar + '</span><span class="step"><button type="button" data-oc="' + o.id + ':' + k + ':-1" aria-label="نقّص ' + esc(b.ar) + '">−</button><span data-ov="' + o.id + ':' + k + '"></span><button type="button" data-oc="' + o.id + ':' + k + ':1" aria-label="زيد ' + esc(b.ar) + '">+</button></span></div>'; }).join("") +
+          (o.free.indexOf("wings") > -1 && WINGS.length > 1 ? '<div class="ofc-w" role="radiogroup" aria-label="نوع الأجنحة">' + WINGS.map(function (w) { return '<button type="button" data-ow="' + o.id + ':' + w.id + '">' + w.ar + '</button>'; }).join("") + '</div>' : "") +
+          '</div><div class="ofc-ft"><span class="num" data-op="' + o.id + '"></span><button type="button" class="btn" data-oa="' + o.id + '">ضيف العرض</button></div></div>';
+      }).join("") + '<p class="ofr-n">تدفع سعر البرگر بس. التوصيل يحدده الكاشير حسب منطقتك.</p></div>';
+    document.body.appendChild(dlg);
+    var oUI = function () {
+      OF.forEach(function (o) { var s = pick[o.id];
+        s.c.forEach(function (n, k) { var e = dlg.querySelector('[data-ov="' + o.id + ':' + k + '"]'); if (e) e.textContent = n; });
+        dlg.querySelectorAll('[data-ow^="' + o.id + ':"]').forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.ow.split(":")[1] === s.w); });
+        var it = offerItem(o.id + "-" + s.c.join("-") + "-" + s.w); dlg.querySelector('[data-op="' + o.id + '"]').innerHTML = money(it.p);
+      });
+    };
+    var lastFocus;
+    var openOffers = function (auto) { lastFocus = document.activeElement; dlg.hidden = false; document.documentElement.classList.add("lock"); oUI(); dlg.querySelector(".ofr-x").focus();
+      T("ViewOffers", { auto: !!auto }, true); try { sessionStorage.setItem("2g_ofr", "1"); } catch (e) {} };
+    var closeOffers = function () { dlg.hidden = true; document.documentElement.classList.remove("lock"); if (lastFocus && lastFocus.focus) lastFocus.focus(); };
+    dlg.addEventListener("click", function (e) {
+      var t = e.target, b;
+      if (t.closest("[data-x]")) return closeOffers();
+      if ((b = t.closest("[data-oc]"))) { var q = b.dataset.oc.split(":"), s = pick[q[0]], k = +q[1], d = +q[2], o2 = 1 - k;
+        if (s.c[k] + d < 0 || s.c[k] + d > OFB[q[0]].n) return; s.c[k] += d; s.c[o2] -= d; if (s.c[o2] < 0) { s.c[o2] = 0; s.c[k] = OFB[q[0]].n; } oUI(); }
+      if ((b = t.closest("[data-ow]"))) { var w = b.dataset.ow.split(":"); pick[w[0]].w = w[1]; oUI(); }
+      if ((b = t.closest("[data-oa]"))) { var s2 = pick[b.dataset.oa], id = b.dataset.oa + "-" + s2.c.join("-") + "-" + s2.w; offerItem(id); add(id, 1); closeOffers(); toast("انضاف " + OFB[b.dataset.oa].title + " للسلة"); }
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !dlg.hidden) closeOffers(); });
+    var ob = document.createElement("button"); ob.type = "button"; ob.className = "ofr-btn"; ob.innerHTML = "<span>العروض</span><b>" + OF.length + "</b>";
+    ob.onclick = function () { openOffers(false); };
+    document.querySelector(".hero .tx").insertBefore(ob, document.querySelector(".hero h1"));
+    var seen = false; try { seen = sessionStorage.getItem("2g_ofr") === "1"; } catch (e) {}
+    if (!seen) setTimeout(function () { if (!$("v-home").hidden && dlg.hidden) openOffers(true); }, 1400);
+  }
 
   /* ---------- toast + routing ---------- */
   var tt;
