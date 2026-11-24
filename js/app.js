@@ -189,8 +189,8 @@
     var pick = {};
     var freeTxt = function (o) { return o.free.map(function (f) { return f === "wings" ? "أجنحة" : ITEMS[f] ? ITEMS[f].ar : ""; }).join(" + "); };
     var dlg = document.createElement("div"); dlg.className = "ofr"; dlg.hidden = true; dlg.setAttribute("role", "dialog"); dlg.setAttribute("aria-modal", "true"); dlg.setAttribute("aria-labelledby", "ofrH");
-    dlg.innerHTML = '<div class="ofr-bg" data-x></div><div class="ofr-box"><button type="button" class="ofr-x" data-x aria-label="سد">×</button>' +
-      '<p class="ofr-k">OFFERS</p><h2 id="ofrH">عروض <em><bdi dir="ltr">2 Guys</bdi></em></h2><p class="ofr-s">اختار البرگر من أي نوع، والباقي علينا.</p>' +
+    dlg.innerHTML = '<div class="ofr-bg" data-x></div><div class="ofr-box"><div class="ofr-top"><div><p class="ofr-k">OFFERS</p><h2 id="ofrH">عروض <em><bdi dir="ltr">2 Guys</bdi></em></h2></div><button type="button" class="ofr-x" data-x><span aria-hidden="true">×</span>اغلق</button></div>' +
+      '<p class="ofr-s">اختار البرگر من أي نوع، والباقي علينا.</p>' +
       OF.map(function (o) {
         pick[o.id] = { c: [o.n, 0], w: WINGS[0] ? WINGS[0].id : "w1" };
         var thumbs = []; for (var k = 0; k < o.n; k++) thumbs.push('<img src="' + img(cheap[k % cheap.length].id, 1) + '" alt="" width="64" height="64">');
@@ -199,8 +199,8 @@
           '<div class="ofc-im">' + thumbs.join("") + '</div>' +
           '<div class="ofc-pk">' + cheap.map(function (b, k) { return '<div class="rowx"><span>' + b.ar + '</span><span class="step"><button type="button" data-oc="' + o.id + ':' + k + ':-1" aria-label="نقّص ' + esc(b.ar) + '">−</button><span data-ov="' + o.id + ':' + k + '"></span><button type="button" data-oc="' + o.id + ':' + k + ':1" aria-label="زيد ' + esc(b.ar) + '">+</button></span></div>'; }).join("") +
           (o.free.indexOf("wings") > -1 && WINGS.length > 1 ? '<div class="ofc-w" role="radiogroup" aria-label="نوع الأجنحة">' + WINGS.map(function (w) { return '<button type="button" data-ow="' + o.id + ':' + w.id + '">' + w.ar + '</button>'; }).join("") + '</div>' : "") +
-          '</div><div class="ofc-ft"><span class="num" data-op="' + o.id + '"></span><button type="button" class="btn" data-oa="' + o.id + '">ضيف العرض</button></div></div>';
-      }).join("") + '<p class="ofr-n">تدفع سعر البرگر بس. التوصيل يحدده الكاشير حسب منطقتك.</p></div>';
+          '</div><div class="ofc-ft"><span class="num" data-op="' + o.id + '"></span><button type="button" class="btn" data-oa="' + o.id + '">اختار</button></div></div>';
+      }).join("") + '<p class="ofr-n">تدفع سعر البرگر بس. التوصيل حسب منطقتك.</p><button type="button" class="ofr-close" data-x>اغلق</button></div>';
     document.body.appendChild(dlg);
     var oUI = function () {
       OF.forEach(function (o) { var s = pick[o.id];
@@ -210,7 +210,7 @@
       });
     };
     var lastFocus;
-    var openOffers = function (auto) { lastFocus = document.activeElement; dlg.hidden = false; document.documentElement.classList.add("lock"); oUI(); dlg.querySelector(".ofr-x").focus();
+    var openOffers = function (auto) { lastFocus = document.activeElement; dlg.hidden = false; document.documentElement.classList.add("lock"); dlg.querySelectorAll(".ofc").forEach(function (c) { c.classList.remove("open"); c.querySelector("[data-oa]").textContent = "اختار"; }); oUI(); var bx = dlg.querySelector(".ofr-box"); bx.tabIndex = -1; bx.focus({ preventScroll: true });
       T("ViewOffers", { auto: !!auto }, true); try { sessionStorage.setItem("2g_ofr", "1"); } catch (e) {} };
     var closeOffers = function () { dlg.hidden = true; document.documentElement.classList.remove("lock"); if (lastFocus && lastFocus.focus) lastFocus.focus(); };
     dlg.addEventListener("click", function (e) {
@@ -219,6 +219,9 @@
       if ((b = t.closest("[data-oc]"))) { var q = b.dataset.oc.split(":"), s = pick[q[0]], k = +q[1], d = +q[2], o2 = 1 - k;
         if (s.c[k] + d < 0 || s.c[k] + d > OFB[q[0]].n) return; s.c[k] += d; s.c[o2] -= d; if (s.c[o2] < 0) { s.c[o2] = 0; s.c[k] = OFB[q[0]].n; } oUI(); }
       if ((b = t.closest("[data-ow]"))) { var w = b.dataset.ow.split(":"); pick[w[0]].w = w[1]; oUI(); }
+      if ((b = t.closest("[data-oa]")) && !b.closest(".ofc").classList.contains("open")) {
+        dlg.querySelectorAll(".ofc").forEach(function (c) { var on = c === b.closest(".ofc"); c.classList.toggle("open", on); c.querySelector("[data-oa]").textContent = on ? "ضيف العرض" : "اختار"; });
+        return; }
       if ((b = t.closest("[data-oa]"))) { var s2 = pick[b.dataset.oa], id = b.dataset.oa + "-" + s2.c.join("-") + "-" + s2.w; offerItem(id); add(id, 1); closeOffers(); toast("انضاف " + OFB[b.dataset.oa].title + " للسلة"); }
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !dlg.hidden) closeOffers(); });
